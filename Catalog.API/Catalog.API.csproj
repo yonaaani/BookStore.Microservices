@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\run-aspnetcore-microservices\src\BuildingBlocks\Common.Logging\Common.Logging.csproj" />
+    <ProjectReference Include="..\BuildingBlocks\Common.Logging\Common.Logging.csproj" />
   </ItemGroup>
 
 </Project>
