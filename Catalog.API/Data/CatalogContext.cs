@@ -2,26 +2,21 @@
 using MongoDB.Driver;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
+using Catalog.API.Data.Interfaces;
 
 namespace Catalog.API.Data
 {
-    public class CatalogContext 
+    public class CatalogContext : ICatalogContext
     {
-        private readonly IMongoDatabase _database;
-        private readonly IMongoCollection<Book> _booksCollection;
-
-        public CatalogContext(IOptions<DatabaseSetting> databaseSettings)
+        public CatalogContext(IConfiguration configuration)
         {
-            var client = new MongoClient(databaseSettings.Value.ConnectionString);
-            _database = client.GetDatabase(databaseSettings.Value.DatabaseName);
+            var client = new MongoClient(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+            var database = client.GetDatabase(configuration.GetValue<string>("DatabaseSettings:DatabaseName"));
 
-            // Get the actual collection
-            _booksCollection = _database.GetCollection<Book>("book");
-
-            CatalogContextSeed.SeedData(_booksCollection);
+            Books = database.GetCollection<Book>(configuration.GetValue<string>("DatabaseSettings:CollectionName"));
+            CatalogContextSeed.SeedData(Books);
         }
 
-        public IMongoDatabase Database => _database;
-        public IMongoCollection<Book> Books => _booksCollection;
+        public IMongoCollection<Book> Books { get; }
     }
 }

@@ -11,11 +11,7 @@ namespace Catalog.API.Repositories
     {
         protected readonly IMongoCollection<T> _collection;
         protected readonly CatalogContext _context;
-        public GenericRepository(CatalogContext context)
-        {
-            _collection = context.Database.GetCollection<T>(typeof(T).Name.ToLower());
-            _context = context;
-        }
+        
 
         public async Task CreateEntity(T entity)
         {

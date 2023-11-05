@@ -11,5 +11,9 @@ namespace Catalog.API.Repositories.Interfaces
         Task<IEnumerable<Book>> GetBooksByGenre(string genre);
         Task<IEnumerable<Book>> GetBooksByLanguage(string languageName);
         Task<Book> GetBookByTitle(string title);
+
+        Task CreateBook(Book book);
+        Task<bool> UpdateBook(Book book);
+        Task<bool> DeleteBook(string id);
     }
 }

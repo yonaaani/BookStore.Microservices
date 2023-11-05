@@ -73,39 +73,27 @@ namespace Catalog.API.Controllers
             return Ok(books);
         }
 
-        [HttpPost(Name = "AddBook")]
-        [ProducesResponseType(typeof(Book), (int)HttpStatusCode.Created)]
+        [HttpPost]
+        [ProducesResponseType(typeof(Book), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<Book>> CreateBook([FromBody] Book book)
         {
-            // Generate a random 24-digit hexadecimal string for the Id
-            book.Id = GenerateRandomHexadecimalId();
+            await _repository.CreateBook(book);
 
-            await _repository.CreateEntity(book);
-
-            return CreatedAtRoute("GetBookById", new { id = book.Id }, book);
+            return CreatedAtRoute("GetBook", new { id = book.Id }, book);
         }
 
-        [HttpPut(Name = "UpdateBook")]
+        [HttpPut]
         [ProducesResponseType(typeof(Book), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> UpdateBook([FromBody] Book book)
         {
-            return Ok(await _repository.UpdateEntity(book));
+            return Ok(await _repository.UpdateBook(book));
         }
 
         [HttpDelete("{id:length(24)}", Name = "DeleteBook")]
         [ProducesResponseType(typeof(Book), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> DeleteBookById(string id)
         {
-            return Ok(await _repository.DeleteEntity(id));
-        }
-        private string GenerateRandomHexadecimalId()
-        {
-            // Generate a random 24-digit hexadecimal string
-            Random random = new Random();
-            byte[] buffer = new byte[12];
-            random.NextBytes(buffer);
-            string randomHexId = string.Concat(buffer.Select(b => b.ToString("x2")));
-            return randomHexId;
+            return Ok(await _repository.DeleteBook(id));
         }
     }
 }
