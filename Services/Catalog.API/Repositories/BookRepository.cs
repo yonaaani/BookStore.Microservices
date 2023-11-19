@@ -4,16 +4,36 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using Catalog.API.Data;
 using Catalog.API.Data.Interfaces;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Catalog.API.Repositories
 {
     public class BookRepository :  IBookRepository
     {
         private readonly ICatalogContext _context;
+        private readonly IMemoryCache _cache;
 
-        public BookRepository(ICatalogContext context)
+        public BookRepository(IMemoryCache cache, ICatalogContext context)
         {
+            _cache = cache;
             _context = context ?? throw new ArgumentNullException(nameof(context));
+        }
+        public async Task<IEnumerable<Book>> GetBooks()
+        {
+            string cacheKey = "AllBooks";
+            if (!_cache.TryGetValue(cacheKey, out IEnumerable<Book> cachedBooks))
+            {
+                cachedBooks = await _context.Books.Find(new BsonDocument()).ToListAsync();
+
+                if (cachedBooks != null)
+                {
+                    _cache.Set(cacheKey, cachedBooks, new MemoryCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10), // Термін дії кешу
+                    });
+                }
+            }
+            return cachedBooks;
         }
 
         public async Task<Book> GetBookByTitle(string title)
@@ -56,11 +76,6 @@ namespace Catalog.API.Repositories
             return await _context.Books
                           .Find(p => p.LanguageName == languageName)
                           .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Book>> GetBooks()
-        {
-            return await _context.Books.Find(new BsonDocument()).ToListAsync();
         }
 
         public async Task CreateBook(Book book)
