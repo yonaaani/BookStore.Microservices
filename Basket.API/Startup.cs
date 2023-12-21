@@ -43,8 +43,12 @@ namespace Basket.API
             services.AddScoped<IBasketRepository, BasketRepository>();
 
             // Grpc Configuration
+
+            // конфігурація клієнта за допомогою Dependency Injection
+            // додається клієнт такого-то типу
             services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>
                         (o => o.Address = new Uri(Configuration["GrpcSettings:DiscountUrl"]));
+            // і тут життєвий цикл, тобто для ожного HTTP-запиту буде створений новий екземпляр сервісу для кожної обнови сторінки
             services.AddScoped<DiscountGrpcService>();
 
             // MassTransit-RabbitMQ Configuration

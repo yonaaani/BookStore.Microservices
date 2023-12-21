@@ -2,6 +2,7 @@
 
 option csharp_namespace = "Discount.Grpc.Protos";
 
+//сервіс gRPC з чотирма методами RPC
 service DiscountProtoService {
 
 	rpc GetDiscount (GetDiscountRequest) returns (CouponModel);
@@ -11,10 +12,12 @@ service DiscountProtoService {
 	rpc DeleteDiscount (DeleteDiscountRequest) returns (DeleteDiscountResponse);	  
 }
 
+//запит
 message GetDiscountRequest {
   string title = 1;
 }
 
+//відповідь
 message CouponModel {
 	int32 id = 1;
 	string title = 2;
@@ -34,6 +37,7 @@ message DeleteDiscountRequest {
   string title = 1;
 }
 
+//відповідь
 message DeleteDiscountResponse {
   bool success = 1;
 }
